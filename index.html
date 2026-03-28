@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="shortcut icon" href="./fav.svg" type="image/x-icon">
+  <title>I Love You Forever 💘</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins&display=swap" rel="stylesheet">
+
+  <style>
+    /* ---------- Body & Background ---------- */
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      position: relative;
+      color: white;
+      background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      display: flex; /* Layout a due colonne */
+      justify-content: center;
+      align-items: center;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ---------- Main Layout After Start ---------- */
+    #main-content {
+      display: none; /* Nascosto all'inizio */
+      width: 90%;
+      max-width: 1200px;
+      height: 80vh;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    /* Colonna Sinistra: Titolo e Frasi */
+    .left-panel {
+      flex: 1;
+      text-align: center;
+      padding-right: 50px;
+    }
+
+    h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 4rem;
+      margin-bottom: 10px;
+      text-shadow: 3px 3px 10px rgba(255, 0, 102, 0.7);
+    }
+
+    #love-text {
+      font-size: 1.8rem;
+      margin-top: 10px;
+      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Colonna Destra: Testo Canzone (Scorrevole) */
+    .right-panel {
+      width: 400px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 30px;
+      overflow-y: auto; /* Abilita lo scorrimento manuale */
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    /* Stile Scrollbar del testo */
+    .right-panel::-webkit-scrollbar {
+      width: 8px;
+    }
+    .right-panel::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+    .right-panel::-webkit-scrollbar-thumb {
+      background: rgba(255, 0, 102, 0.5);
+      border-radius: 10px;
+    }
+
+    #lyrics-content {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+    }
+
+    .lyric-line {
+      margin-bottom: 8px;
+    }
+
+    .lyric-tag {
+      color: #ff0066;
+      font-weight: bold;
+      margin-top: 20px;
+      display: block;
+      font-size: 1.1rem;
+    }
+
+    /* ---------- Play Button Overlay ---------- */
+    #start-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
+
+    .play-btn {
+      padding: 20px 40px;
+      font-size: 1.5rem;
+      font-family: 'Poppins', sans-serif;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+      color: white;
+      border-radius: 50px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      font-weight: bold;
+    }
+
+    .play-btn:hover {
+      background: white;
+      color: #ff9a9e;
+      transform: scale(1.1);
+    }
+
+    /* ---------- Visual Elements (Hearts) ---------- */
+    .heart {
+      position: absolute;
+      width: 20px; height: 20px;
+      background: red;
+      transform: rotate(45deg);
+      animation: float 6s infinite ease-in-out;
+      opacity: 0.8;
+      z-index: 1;
+    }
+    .heart:before, .heart:after {
+      content: ''; position: absolute; width: 20px; height: 20px;
+      background: red; border-radius: 50%;
+    }
+    .heart:before { top: -10px; left: 0; }
+    .heart:after { left: -10px; top: 0; }
+
+    @keyframes float {
+      0% { transform: translateY(0) rotate(45deg); opacity: 1; }
+      100% { transform: translateY(-100vh) rotate(45deg); opacity: 0; }
+    }
+
+    .cursor-heart {
+      position: absolute; pointer-events: none; z-index: 100;
+    }
+    .cursor-heart:before, .cursor-heart:after {
+      content: ''; position: absolute; width: 12px; height: 12px;
+      background: red; border-radius: 50%; top: -6px;
+    }
+    .cursor-heart:after { left: -6px; }
+
+    @keyframes growAndFade {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(1.2); opacity: 0; }
+    }
+
+    /* ---------- Music Control ---------- */
+    #music-toggle {
+      position: absolute; bottom: 20px; left: 20px;
+      background: rgba(255, 0, 0, 0.3); border: none;
+      border-radius: 50%; width: 45px; height: 45px;
+      cursor: pointer; z-index: 100; display: flex;
+      justify-content: center; align-items: center;
+    }
+    #music-toggle svg { width: 24px; height: 24px; fill: white; }
+  </style>
+</head>
+
+<body>
+
+  <div id="start-overlay">
+    <button class="play-btn" onclick="startExperience()">Clicca per Gaia ❤️</button>
+  </div>
+
+  <div id="main-content">
+    
+    <div class="left-panel">
+      <h1>I Love You Gaia, <span id="txt">❤️</span></h1>
+      <p id="love-text"></p>
+    </div>
+
+    <div class="right-panel">
+      <div id="lyrics-content">
+        <span class="lyric-tag">[Intro]</span>
+        <div class="lyric-line">Yeah, uoh, ah</div>
+
+        <span class="lyric-tag">[Strofa 1]</span>
+        <div class="lyric-line">Sei distante, riesco lo stesso a sentirti piangere</div>
+        <div class="lyric-line">Il freddo del tuo sangue, il caldo delle tue lacrime</div>
+        <div class="lyric-line">Ci faremo entanglement anche ad un megaparsec</div>
+        <div class="lyric-line">Ogni volta che ti umilio mi fai sentire importante</div>
+        <div class="lyric-line">Perché l'amore è proprio come andare in tandem</div>
+        <div class="lyric-line">Uno guarda già al futuro e l'altro gli guarda le spalle</div>
+        <div class="lyric-line">Mi fai mille domande, ti metti pesante</div>
+        <div class="lyric-line">Mi prendi il torso a morsi, ti bagni ed esondi</div>
+        <div class="lyric-line">Anche se duro tre secondi, sembra di farlo da giorni</div>
+        <div class="lyric-line">Mi disgusti quando vengo, ma mi manchi se non torni</div>
+        <div class="lyric-line">Tu hai solo quella faccia, io invece ho mille volti</div>
+        <div class="lyric-line">Fumo fino all'affanno, bevo fino a confondermi</div>
+        <div class="lyric-line">Brucia la pellicola, ma il finale è immutabile</div>
+        <div class="lyric-line">L'occhio del regista è ineluttabile</div>
+        <div class="lyric-line">Neanche insieme lo possiamo battere, ora vattene</div>
+        <div class="lyric-line">Metto al sicuro in tasca un ultimo bacio volante, il più importante</div>
+
+        <span class="lyric-tag">[Interludio]</span>
+        <div class="lyric-line">Se prende fuoco la pellicola, a come sei piccolo tu, fai una vampata sola. Boom!</div>
+        <div class="lyric-line">È stato il giorno in cui ho capito che c'era tutta una intera vita dietro ogni cosa.</div>
+        <div class="lyric-line">E io chi sono? Tu sei la star.</div>
+
+        <span class="lyric-tag">[Strofa 2]</span>
+        <div class="lyric-line">Baby, io sono vita e come vita io sono caduco</div>
+        <div class="lyric-line">Materie in un corpo, quindi mi sento saturo</div>
+        <div class="lyric-line">Fisica dell'atomo e lo so di essere vacuo</div>
+        <div class="lyric-line">Un essere fallibile, solo un bambino armato</div>
+        <div class="lyric-line">Tu sparami, reinventami e poi scaldami</div>
+        <div class="lyric-line">Sei bella se sei calda, ti amo pure quando grandini</div>
+        <div class="lyric-line">Sorridi quando sanguini, lo farebbero i martiri</div>
+        <div class="lyric-line">Col cuore ghiacciato e nonostante ciò ci pattini</div>
+        <div class="lyric-line">Sono pieno di rimpianti, questo mi spaventa</div>
+        <div class="lyric-line">Ho il terrore della morte perché è quello che mi spetta</div>
+        <div class="lyric-line">Lo so che lei mi aspetta e vuole fare in fretta</div>
+        <div class="lyric-line">Era una palla di cristallo, ma mo è una cortina ferrea</div>
+        <div class="lyric-line">Ti prego, afferrami</div>
+        <div class="lyric-line">Qui la caduta è lunga e c'è il tempo di scordarsene</div>
+        <div class="lyric-line">Una fenice brucia, un uomo non sa rinascere</div>
+        <div class="lyric-line">Disegnami un sorriso, tatuami le lacrime</div>
+        <div class="lyric-line">Le emozioni che mi muovono io non le ho mai provate</div>
+
+        <span class="lyric-tag">[Outro]</span>
+        <div class="lyric-line">Non c'era niente di vero.</div>
+        <div class="lyric-line">Tu eri vero.</div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="background-music" loop>
+    <source src="Il Filmografo.mp3" type="audio/mpeg">
+  </audio>
+  
+  <button id="music-toggle" style="display:none;">
+    <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+  </button>
+
+  <script>
+    const music = document.getElementById("background-music");
+    const mainContent = document.getElementById("main-content");
+    const loveText = document.getElementById("love-text");
+
+    // ❤️ Frasi random ORIGINALI ripristinate
+    const loveLines = [
+      "uof uof bau bau 💖",
+      "spakki☕❤️",
+      "sei la persona piu bella del mondo 🙏💘",
+      "ti amo tantissimo💞"
+    ];
+
+    function startExperience() {
+      music.play();
+      
+      // Sceglie la frase random
+      loveText.textContent = loveLines[Math.floor(Math.random() * loveLines.length)];
+      
+      // Nasconde overlay
+      document.getElementById("start-overlay").style.opacity = "0";
+      setTimeout(() => {
+        document.getElementById("start-overlay").style.display = "none";
+        
+        // Mostra il contenuto principale con layout a due colonne
+        mainContent.style.display = "flex";
+        document.getElementById("music-toggle").style.display = "flex";
+        setTimeout(() => { mainContent.style.opacity = "1"; }, 50);
+      }, 500);
+    }
+
+    // 💖 Falling Hearts
+    setInterval(() => {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = (2 + Math.random() * 3) + "s";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 6000);
+    }, 300);
+
+    // 💗 Mouse Trail
+    const hearts = Array.from({ length: 15 }, () => {
+      const h = document.createElement('div');
+      h.classList.add('cursor-heart');
+      document.body.appendChild(h);
+      return h;
+    });
+    let hIdx = 0;
+    document.addEventListener('mousemove', (e) => {
+      const h = hearts[hIdx];
+      hIdx = (hIdx + 1) % 15;
+      h.style.left = e.clientX + 'px';
+      h.style.top = e.clientY + 'px';
+      h.style.animation = 'none';
+      void h.offsetWidth;
+      h.style.animation = 'growAndFade 0.6s forwards';
+    });
+
+    // Controllo Musica
+    document.getElementById("music-toggle").addEventListener("click", () => {
+      if (music.paused) music.play(); else music.pause();
+    });
+  </script>
+</body>
+</html>
